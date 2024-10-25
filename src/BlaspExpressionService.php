@@ -7,11 +7,39 @@ use Exception;
 abstract class BlaspExpressionService
 {
     /**
-     * Value used as a the separator placeholder.
+     * Value used as a separator placeholder.
      *
      * @var string
      */
     const SEPARATOR_PLACEHOLDER = '{!!}';
+
+    /**
+     * Key to access profanities expressions.
+     *
+     * @var string
+     */
+    const KEY_PROFANITIES = 'profanities';
+
+    /**
+     * Key to access separators expressions.
+     *
+     * @var string
+     */
+    const KEY_SEPARATORS = 'separators';
+
+    /**
+     * Key to access substitutions expressions.
+     *
+     * @var string
+     */
+    const KEY_SUBSTITUTIONS = 'substitutions';
+
+    /**
+     * Key to access false positives expressions.
+     *
+     * @var string
+     */
+    const KEY_FALSE_POSITIVES = 'false_positives';
 
     /**
      * A list of possible character separators.
@@ -85,6 +113,13 @@ abstract class BlaspExpressionService
     protected array $falsePositives;
 
     /**
+     * Static cache for language-specific configurations
+     *
+     * @var array
+     */
+    protected array $cache = [];
+
+    /**
      * @throws Exception
      */
     public function __construct(?string $language = null)
@@ -110,17 +145,29 @@ abstract class BlaspExpressionService
      */
     private function loadConfiguration(): void
     {
-        $this->supportedLanguages = config('blasp.languages');
+        if (!isset($this->cache[$this->chosenLanguage])) {
+            $this->supportedLanguages = config('blasp.languages');
 
-        if (empty($this->chosenLanguage)) {
-            $this->chosenLanguage = config('blasp.default_language');
+            if (empty($this->chosenLanguage)) {
+                $this->chosenLanguage = config('blasp.default_language');
+            }
+
+            $this->validateChosenLanguage();
+
+            $this->cache[$this->chosenLanguage] = [
+                self::KEY_PROFANITIES => config("blasp_{$this->chosenLanguage}.profanities"),
+                self::KEY_SEPARATORS => config("blasp.separators"),
+                self::KEY_SUBSTITUTIONS => config('blasp.substitutions'),
+                self::KEY_FALSE_POSITIVES => array_map('strtolower', config("blasp_{$this->chosenLanguage}.false_positives")),
+            ];
+
         }
 
-        $this->validateChosenLanguage();
+        $this->profanities = $this->cache[$this->chosenLanguage]['profanities'];
+        $this->separators = $this->cache[$this->chosenLanguage]['separators'];
+        $this->substitutions = $this->cache[$this->chosenLanguage]['substitutions'];
+        $this->falsePositives = $this->cache[$this->chosenLanguage]['false_positives'];
 
-        $this->profanities = config('blasp.profanities')[$this->chosenLanguage];
-        $this->separators = config('blasp.separators');
-        $this->substitutions = config('blasp.substitutions');
     }
 
     /**
@@ -202,7 +249,7 @@ abstract class BlaspExpressionService
      */
     private function generateFalsePositiveExpressionArray(): void
     {
-        $this->falsePositives = array_map('strtolower', config('blasp.false_positives')[$this->chosenLanguage]);
+        $this->falsePositives = array_map('strtolower', $this->falsePositives);
     }
 
     /**
