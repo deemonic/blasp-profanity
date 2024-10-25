@@ -7,7 +7,7 @@ use Exception;
 abstract class BlaspExpressionService
 {
     /**
-     * Value used as a the separator placeholder.
+     * Value used as a separator placeholder.
      *
      * @var string
      */
@@ -118,7 +118,7 @@ abstract class BlaspExpressionService
 
         $this->validateChosenLanguage();
 
-        $this->profanities = config('blasp.profanities')[$this->chosenLanguage];
+        $this->profanities = config("blasp_{$this->chosenLanguage}.profanities");
         $this->separators = config('blasp.separators');
         $this->substitutions = config('blasp.substitutions');
     }
@@ -202,7 +202,7 @@ abstract class BlaspExpressionService
      */
     private function generateFalsePositiveExpressionArray(): void
     {
-        $this->falsePositives = array_map('strtolower', config('blasp.false_positives')[$this->chosenLanguage]);
+        $this->falsePositives = array_map('strtolower', config("blasp_{$this->chosenLanguage}.false_positives"));
     }
 
     /**

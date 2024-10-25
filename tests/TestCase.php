@@ -9,7 +9,7 @@ use Orchestra\Testbench\TestCase as BaseTestCase;
 abstract class TestCase extends BaseTestCase
 {
 
-    protected function getPackageProviders($app)
+    protected function getPackageProviders($app): array
     {
         return [
             ServiceProvider::class,
@@ -19,11 +19,67 @@ abstract class TestCase extends BaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Config::set('blasp.profanities', [
-            'en' => ['fucking', 'shit', 'cunt', 'fuck', 'penis', 'cock', 'twat', 'ass', 'dick', 'sex', 'butt', 'arse', 'lick', 'anal', 'clusterfuck', 'bullshit', 'fucked', 'damn', 'crap', 'hell'],
-            'fr' => ['putain', 'connasse', 'c0nn4ss3', 'putain', 'connard', 'merdique', 'bordel', 'foutre', 'Putain', 'merde']]);
-        Config::set('blasp.false_positives', ['fr' => ['passeur', 'classe'], 'en' => ['Scunthorpe', 'Cockburn', 'Penistone', 'Lightwater', 'Assume', 'bass', 'class', 'Compass', 'Pass',
-            'Dickinson', 'Middlesex', 'Cockerel', 'Butterscotch', 'Blackcock', 'Countryside', 'Arsenal', 'Flick', 'Flicker', 'Analyst', 'blackCocktail',]]);
+
+        Config::set('blasp_en.profanities', [
+            'fucking',
+            'shit',
+            'cunt',
+            'fuck',
+            'penis',
+            'cock',
+            'twat',
+            'ass',
+            'dick',
+            'sex',
+            'butt',
+            'arse',
+            'lick',
+            'anal',
+            'clusterfuck',
+            'bullshit',
+            'fucked',
+            'damn',
+            'crap',
+            'hell',
+        ]);
+        Config::set('blasp_en.false_positives', [
+            'Scunthorpe',
+            'Cockburn',
+            'Penistone',
+            'Lightwater',
+            'Assume',
+            'bass',
+            'class',
+            'Compass',
+            'Pass',
+            'Dickinson',
+            'Middlesex',
+            'Cockerel',
+            'Butterscotch',
+            'Blackcock',
+            'Countryside',
+            'Arsenal',
+            'Flick',
+            'Flicker',
+            'Analyst',
+            'blackCocktail',
+        ]);
+        Config::set('blasp_fr.profanities', [
+            'putain',
+            'connasse',
+            'c0nn4ss3',
+            'putain',
+            'connard',
+            'merdique',
+            'bordel',
+            'foutre',
+            'Putain',
+            'merde',
+        ]);
+        Config::set('blasp_fr.false_positives', [
+            'passeur',
+            'classe',
+        ]);
         Config::set('blasp.languages', ['en', 'fr']);
         Config::set('blasp.separators', [' ', '-', '_']);
         Config::set('blasp.substitutions', [
