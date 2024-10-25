@@ -49,7 +49,6 @@ class BlaspService extends BlaspExpressionService
     public function __construct()
     {
         parent::__construct();
-        return $this;
     }
 
     /**
@@ -116,7 +115,7 @@ class BlaspService extends BlaspExpressionService
                         $this->hasProfanity = true;
 
                         // Replace the found profanity
-                        $this->generateProfanityReplacement($match);
+                        $this->generateProfanityReplacement((array) $match);
 
                         // Avoid adding duplicates to the unique list
                         if (!in_array($profanity, $this->uniqueProfanitiesFound)) {
@@ -132,9 +131,9 @@ class BlaspService extends BlaspExpressionService
 
     /**
      * Mask the profanities found in the incoming string.
-     * 
-     * @param string $profanity
-     * @return string
+     *
+     * @param array $match
+     * @return void
      */
     private function generateProfanityReplacement(array $match): void
     {
