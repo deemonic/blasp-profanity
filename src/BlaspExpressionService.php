@@ -14,11 +14,11 @@ abstract class BlaspExpressionService
     const SEPARATOR_PLACEHOLDER = '{!!}';
 
     /**
-     * Key to access profanities expressions.
+     * Package name.
      *
      * @var string
      */
-    const KEY_PROFANITIES = 'profanities';
+    const APP_NAME = 'blasp';
 
     /**
      * Key to access separators expressions.
@@ -35,11 +35,33 @@ abstract class BlaspExpressionService
     const KEY_SUBSTITUTIONS = 'substitutions';
 
     /**
+     * Key to access profanities expressions.
+     *
+     * @var string
+     */
+    const KEY_PROFANITIES = 'profanities';
+
+    /**
      * Key to access false positives expressions.
      *
      * @var string
      */
     const KEY_FALSE_POSITIVES = 'false_positives';
+
+    /**
+     * Key to access supported language array.
+     *
+     * @var string
+     */
+    const KEY_SUPPORTED_LANGUAGE = 'languages';
+
+
+    /**
+     * Key to access default language.
+     *
+     * @var string
+     */
+    const KEY_DEFAULT_LANGUAGE = 'default_language';
 
     /**
      * A list of possible character separators.
@@ -113,11 +135,11 @@ abstract class BlaspExpressionService
     protected array $falsePositives;
 
     /**
-     * Static cache for language-specific configurations
+     * A string to access to chosen language config file
      *
-     * @var array
+     * @var string
      */
-    protected array $cache = [];
+    protected string $chosenLanguageConfigPath;
 
     /**
      * @throws Exception
@@ -145,28 +167,19 @@ abstract class BlaspExpressionService
      */
     private function loadConfiguration(): void
     {
-        if (!isset($this->cache[$this->chosenLanguage])) {
-            $this->supportedLanguages = config('blasp.languages');
+        $this->supportedLanguages = config(self::APP_NAME . '.' . self::KEY_SUPPORTED_LANGUAGE);
 
-            if (empty($this->chosenLanguage)) {
-                $this->chosenLanguage = config('blasp.default_language');
-            }
+        $this->validateChosenLanguage();
 
-            $this->validateChosenLanguage();
+        $this->chosenLanguageConfigPath = "{$this->chosenLanguage}/" . self::APP_NAME;
 
-            $this->cache[$this->chosenLanguage] = [
-                self::KEY_PROFANITIES => config("blasp_{$this->chosenLanguage}." . self::KEY_PROFANITIES),
-                self::KEY_SEPARATORS => config("blasp." . self::KEY_SEPARATORS),
-                self::KEY_SUBSTITUTIONS => config('blasp.' . self::KEY_SUBSTITUTIONS),
-                self::KEY_FALSE_POSITIVES => array_map('strtolower', config("blasp_{$this->chosenLanguage}." . self::KEY_FALSE_POSITIVES)),
-            ];
+        $this->profanities = config("{$this->chosenLanguageConfigPath}." . self::KEY_PROFANITIES);
 
-        }
+        $this->falsePositives = config("{$this->chosenLanguageConfigPath}." . self::KEY_FALSE_POSITIVES);
 
-        $this->profanities = $this->cache[$this->chosenLanguage][self::KEY_PROFANITIES];
-        $this->separators = $this->cache[$this->chosenLanguage][self::KEY_SEPARATORS];
-        $this->substitutions = $this->cache[$this->chosenLanguage][self::KEY_SUBSTITUTIONS];
-        $this->falsePositives = $this->cache[$this->chosenLanguage][self::KEY_FALSE_POSITIVES];
+        $this->separators = config(self::APP_NAME . '.' . self::KEY_SEPARATORS);
+
+        $this->substitutions = config(self::APP_NAME . '.' . self::KEY_SUBSTITUTIONS);
 
     }
 
@@ -220,7 +233,6 @@ abstract class BlaspExpressionService
         $profanityCount = count($this->profanities);
 
         for ($i = 0; $i < $profanityCount; $i++) {
-
             $this->profanityExpressions[$this->profanities[$i]] = $this->generateProfanityExpression($this->profanities[$i]);
         }
     }
@@ -258,8 +270,14 @@ abstract class BlaspExpressionService
      */
     private function validateChosenLanguage(): void
     {
+        if (empty($this->chosenLanguage)) {
+            $this->chosenLanguage = config(self::APP_NAME . '.' . self::KEY_DEFAULT_LANGUAGE);
+            return;
+        }
+
         if (!in_array($this->chosenLanguage, $this->supportedLanguages, true)) {
             throw new Exception('Unsupported language.');
         }
     }
+
 }

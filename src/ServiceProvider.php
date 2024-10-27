@@ -14,8 +14,8 @@ class ServiceProvider extends BaseServiceProvider
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/../config/config.php' => config_path('blasp.php'),
-                __DIR__ . '/../config/config_en.php' => config_path('blasp_en.php'),
-                __DIR__ . '/../config/config_fr.php' => config_path('blasp_fr.php'),
+                __DIR__ . '/../config/en/config.php' => config_path('en/blasp.php'),
+                __DIR__ . '/../config/config_fr.php' => config_path('fr/blasp.php'),
             ], 'blasp-config');
         }
 
@@ -34,8 +34,8 @@ class ServiceProvider extends BaseServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'blasp');
-        $this->mergeConfigFrom(__DIR__ . '/../config/config_en.php', 'blasp_en');
-        $this->mergeConfigFrom(__DIR__ . '/../config/config_fr.php', 'blasp_fr');
+        $this->mergeConfigFrom(__DIR__ . '/../config/en/config.php', 'en/blasp');
+        $this->mergeConfigFrom(__DIR__ . '/../config/fr/config.php', 'fr/blasp');
 
         $this->app->bind('blasp', function() {
             return new BlaspService();

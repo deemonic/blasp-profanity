@@ -20,7 +20,7 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        Config::set('blasp_en.profanities', [
+        Config::set('en/blasp.profanities', [
             'fucking',
             'shit',
             'cunt',
@@ -42,7 +42,7 @@ abstract class TestCase extends BaseTestCase
             'crap',
             'hell',
         ]);
-        Config::set('blasp_en.false_positives', [
+        Config::set('en/blasp.false_positives', [
             'Scunthorpe',
             'Cockburn',
             'Penistone',
@@ -64,7 +64,7 @@ abstract class TestCase extends BaseTestCase
             'Analyst',
             'blackCocktail',
         ]);
-        Config::set('blasp_fr.profanities', [
+        Config::set('fr/blasp.profanities', [
             'putain',
             'connasse',
             'c0nn4ss3',
@@ -76,7 +76,7 @@ abstract class TestCase extends BaseTestCase
             'Putain',
             'merde',
         ]);
-        Config::set('blasp_fr.false_positives', [
+        Config::set('fr/blasp.false_positives', [
             'passeur',
             'classe',
         ]);
