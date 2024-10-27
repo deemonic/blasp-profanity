@@ -1,7 +1,7 @@
 <?php
 
 namespace Blaspsoft\Blasp;
- 
+
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
@@ -13,7 +13,9 @@ class ServiceProvider extends BaseServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/config.php' => config_path('blasp.php'),
+                __DIR__ . '/../config/config.php' => config_path('blasp.php'),
+                __DIR__ . '/../config/en/config.php' => config_path('en/blasp.php'),
+                __DIR__ . '/../config/config_fr.php' => config_path('fr/blasp.php'),
             ], 'blasp-config');
         }
 
@@ -31,9 +33,11 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'blasp');
+        $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'blasp');
+        $this->mergeConfigFrom(__DIR__ . '/../config/en/config.php', 'en/blasp');
+        $this->mergeConfigFrom(__DIR__ . '/../config/fr/config.php', 'fr/blasp');
 
-        $this->app->bind('blasp', function () {
+        $this->app->bind('blasp', function() {
             return new BlaspService();
         });
     }
